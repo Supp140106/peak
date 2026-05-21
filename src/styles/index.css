@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* =============================================
+   PEAK — Claude-Inspired Design System (Tailwind 4)
+   ============================================= */
+
+@theme {
+  /* Colors */
+  --color-bg-primary: #FAFAF8;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #F5F5F0;
+  --color-bg-hover: #F0EFEA;
+  
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #9B9B9B;
+  
+  --color-accent: #D4896A;
+  --color-accent-hover: #C47A5C;
+  --color-accent-light: #F5E6DC;
+  
+  --color-border: #E8E8E3;
+  --color-border-focus: #D4896A;
+  
+  --color-success: #5DB075;
+  --color-success-light: #E3F4E8;
+  --color-warning: #E6A849;
+  --color-warning-light: #FDF3E0;
+  --color-danger: #D66A6A;
+  --color-danger-light: #FCE8E8;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 10px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.06);
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.8rem;
+  --radius-lg: 1.2rem;
+  --radius-xl: 1.5rem;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Base resets and defaults */
+@layer base {
+  * {
+    @apply border-[var(--color-border)];
+  }
+  
+  html {
+    @apply font-sans antialiased text-[var(--color-text-primary)] bg-[var(--color-bg-primary)];
+  }
+
+  body {
+    @apply min-h-screen overflow-hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* Custom Components & Utilities */
+@layer components {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  
+  .card-premium {
+    @apply bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[var(--radius-lg)] shadow-[var(--shadow-card)] transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5;
+  }
+}
+
+/* Animations */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-[var(--color-border)] rounded-full hover:bg-[var(--color-text-tertiary)];
+}
+
+/* Dark Mode Overrides */
+.dark {
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1E1E1E;
+  --color-bg-tertiary: #252525;
+  --color-bg-hover: #2A2A2A;
+  
+  --color-text-primary: #E8E4DF;
+  --color-text-secondary: #9B9690;
+  --color-text-tertiary: #6B6660;
+  
+  --color-accent: #D4A574;
+  --color-border: #2A2A2A;
+  --color-border-focus: #D4A574;
+}
