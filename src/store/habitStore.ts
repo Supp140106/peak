@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import type { Habit, HabitLog, HabitWithStats } from '@/types';
 import * as habitDb from '@/database/habits';
+import { todayISO } from '@/utils/dates';
 
 interface HabitState {
   habits: Habit[];
@@ -39,7 +40,7 @@ export const useHabitStore = create<HabitState>((set, get) => ({
       const enrichedActive: HabitWithStats[] = await Promise.all(
         active.map(async (habit) => {
           const streak = await habitDb.getStreak(habit.id);
-          const todayLog = await habitDb.getLogForHabitOnDate(habit.id, new Date().toISOString().split('T')[0]);
+          const todayLog = await habitDb.getLogForHabitOnDate(habit.id, todayISO());
           const totalCompletions = await habitDb.getTotalCompletions(habit.id);
           
           return {
@@ -104,7 +105,7 @@ export const useHabitStore = create<HabitState>((set, get) => ({
       await recalculateHabitStreak(id);
       
       // Grant XP if completed
-      const log = await habitDb.getLogForHabitOnDate(id, date || new Date().toISOString().split('T')[0]);
+      const log = await habitDb.getLogForHabitOnDate(id, date || todayISO());
       if (log && log.status === 'completed') {
         const { useGamificationStore } = await import('@/store/gamificationStore');
         useGamificationStore.getState().addXp(50);

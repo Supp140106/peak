@@ -40,7 +40,7 @@ export function DashboardPage() {
   const progressPercent = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
 
   const maxStreak = activeHabits.length > 0 
-    ? Math.max(...activeHabits.map(h => h.currentStreak)) 
+    ? Math.max(...activeHabits.map(h => h.longestStreak ?? h.currentStreak)) 
     : 0;
 
   return (

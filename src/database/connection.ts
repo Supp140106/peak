@@ -120,6 +120,31 @@ async function runMigrations(database: Database): Promise<void> {
     )
   `);
 
+  await database.execute(`
+    CREATE TABLE IF NOT EXISTS block_categories (
+      id TEXT PRIMARY KEY,
+      label TEXT NOT NULL,
+      emoji TEXT DEFAULT '🌐',
+      color TEXT DEFAULT 'bg-blue-50 border-blue-200 text-blue-700',
+      is_custom INTEGER DEFAULT 0,
+      sort_order INTEGER DEFAULT 0
+    )
+  `);
+
+  await database.execute(`
+    CREATE TABLE IF NOT EXISTS block_domains (
+      id TEXT PRIMARY KEY,
+      category_id TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      FOREIGN KEY (category_id) REFERENCES block_categories(id) ON DELETE CASCADE,
+      UNIQUE(category_id, domain)
+    )
+  `);
+
+  await database.execute(`
+    CREATE INDEX IF NOT EXISTS idx_block_domains_category ON block_domains(category_id)
+  `);
+
   // Create indexes for performance
   await database.execute(`
     CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_id ON habit_logs(habit_id)

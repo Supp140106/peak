@@ -18,7 +18,8 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  ShieldOff
 } from 'lucide-react';
 import { SearchDialog } from '@/components/common/SearchDialog';
 import { cn } from '@/utils/cn';
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { id: 'goals', label: 'Goals', icon: Target, path: '/goals' },
   { id: 'calendar', label: 'Calendar', icon: Calendar, path: '/calendar' },
   { id: 'analytics', label: 'Analytics', icon: BarChart2, path: '/analytics' },
+  { id: 'focus-block', label: 'Focus Block', icon: ShieldOff, path: '/focus-block' },
 ];
 
 export function Sidebar() {

@@ -16,8 +16,8 @@ import { JournalPage } from '@/pages/JournalPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { GoalsPage } from '@/pages/GoalsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
-
 import { HabitDetailPage } from '@/pages/HabitDetailPage';
+import { FocusBlockPage } from '@/pages/FocusBlockPage';
 
 export function App() {
   const { loadSettings, isLoading } = useSettingsStore();
@@ -47,6 +47,7 @@ export function App() {
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="goals" element={<GoalsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="focus-block" element={<FocusBlockPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
