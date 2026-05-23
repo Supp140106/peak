@@ -4,7 +4,6 @@ import { Search as SearchIcon, ArrowRight, LayoutDashboard, CheckSquare, Target,
 import { useNavigate } from 'react-router-dom';
 import { useHabitStore } from '@/store/habitStore';
 import { useKeyboardShortcut } from '@/hooks/useKeyboard';
-import { Input } from '@/components/ui/Input';
 import { cn } from '@/utils/cn';
 
 interface SearchResult {
@@ -26,7 +25,6 @@ export function SearchDialog() {
   useKeyboardShortcut({ key: 'k', meta: true }, () => setIsOpen(true));
   useKeyboardShortcut({ key: 'k', ctrl: true }, () => setIsOpen(true));
   
-  // Close on Escape
   useKeyboardShortcut({ key: 'Escape' }, () => setIsOpen(false), !isOpen);
 
   useEffect(() => {
@@ -40,7 +38,6 @@ export function SearchDialog() {
 
   const results: SearchResult[] = [];
 
-  // Static navigation
   const navItems = [
     { title: 'Dashboard', path: '/', icon: LayoutDashboard },
     { title: 'Habits', path: '/habits', icon: CheckSquare },
@@ -51,27 +48,23 @@ export function SearchDialog() {
   if (query) {
     const q = query.toLowerCase();
     
-    // Search Navigation
     navItems.forEach(nav => {
       if (nav.title.toLowerCase().includes(q)) {
         results.push({ id: `nav-${nav.path}`, title: nav.title, subtitle: 'Navigation', type: 'navigation', path: nav.path });
       }
     });
 
-    // Search Habits
     activeHabits.forEach(habit => {
       if (habit.name.toLowerCase().includes(q) || habit.description.toLowerCase().includes(q) || habit.category.toLowerCase().includes(q)) {
         results.push({ id: `habit-${habit.id}`, title: habit.name, subtitle: `Habit • ${habit.category}`, type: 'habit', path: `/habits/${habit.id}` });
       }
     });
   } else {
-    // Default suggestions when empty
     navItems.forEach(nav => {
       results.push({ id: `nav-${nav.path}`, title: nav.title, subtitle: 'Navigation', type: 'navigation', path: nav.path });
     });
   }
 
-  // Keyboard navigation within list
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -100,17 +93,17 @@ export function SearchDialog() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/75"
             onClick={() => setIsOpen(false)}
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="relative z-10 w-full max-w-2xl bg-[var(--color-bg-secondary)] rounded-xl border border-[var(--color-border)] shadow-2xl overflow-hidden"
+            className="relative z-10 w-full max-w-2xl bg-[#141414] rounded-2xl border border-[#2a2a2a] overflow-hidden"
           >
-            <div className="flex items-center px-4 border-b border-[var(--color-border)]">
-              <SearchIcon size={20} className="text-[var(--color-text-tertiary)]" />
+            <div className="flex items-center px-4 border-b border-[#2a2a2a]">
+              <SearchIcon size={20} strokeWidth={1.5} className="text-neutral-500" />
               <input
                 ref={inputRef}
                 value={query}
@@ -120,16 +113,16 @@ export function SearchDialog() {
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Search habits, pages, or notes..."
-                className="w-full h-14 bg-transparent border-none focus:outline-none px-4 text-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)]"
+                className="w-full h-14 bg-transparent border-none focus:outline-none px-4 text-lg text-white placeholder:text-neutral-500"
               />
               <div className="flex gap-1 shrink-0">
-                <kbd className="text-[10px] font-sans border border-[var(--color-border)] rounded px-1.5 py-0.5 bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]">ESC</kbd>
+                <kbd className="text-[10px] border border-[#2a2a2a] rounded px-1.5 py-0.5 bg-[#1a1a1a] text-neutral-500">ESC</kbd>
               </div>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto p-2">
               {results.length === 0 ? (
-                <div className="p-8 text-center text-[var(--color-text-secondary)]">
+                <div className="p-8 text-center text-neutral-400">
                   No results found for "{query}"
                 </div>
               ) : (
@@ -140,28 +133,28 @@ export function SearchDialog() {
                       onClick={() => handleSelect(result)}
                       onMouseEnter={() => setSelectedIndex(i)}
                       className={cn(
-                        "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors",
+                        "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors duration-200",
                         selectedIndex === i 
-                          ? "bg-[var(--color-accent)]/10 text-[var(--color-accent)]" 
-                          : "hover:bg-[var(--color-bg-hover)] text-[var(--color-text-primary)]"
+                          ? "bg-[var(--accent-soft)] text-[var(--accent-lighter)]" 
+                          : "hover:bg-[#1a1a1a] text-white"
                       )}
                     >
                       <div className={cn(
-                        "w-8 h-8 rounded-md flex items-center justify-center shrink-0 border",
+                        "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border",
                         selectedIndex === i 
-                          ? "bg-[var(--color-accent)]/20 border-[var(--color-accent)]/30 text-[var(--color-accent)]" 
-                          : "bg-[var(--color-bg-tertiary)] border-[var(--color-border)] text-[var(--color-text-secondary)]"
+                          ? "bg-[var(--accent-soft)] border-[var(--accent-border)] text-[var(--accent-lighter)]" 
+                          : "bg-[#1a1a1a] border-[#2a2a2a] text-neutral-400"
                       )}>
-                        {result.type === 'navigation' ? <LayoutDashboard size={16} /> : 
-                         result.type === 'habit' ? <CheckSquare size={16} /> : 
-                         <BookOpen size={16} />}
+                        {result.type === 'navigation' ? <LayoutDashboard size={16} strokeWidth={1.5} /> : 
+                         result.type === 'habit' ? <CheckSquare size={16} strokeWidth={1.5} /> : 
+                         <BookOpen size={16} strokeWidth={1.5} />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{result.title}</div>
-                        <div className="text-xs truncate opacity-70">{result.subtitle}</div>
+                        <div className="text-xs text-neutral-500 truncate">{result.subtitle}</div>
                       </div>
                       {selectedIndex === i && (
-                        <ArrowRight size={16} className="text-[var(--color-accent)] opacity-70" />
+                        <ArrowRight size={16} strokeWidth={1.5} className="text-[var(--accent-lighter)]" />
                       )}
                     </button>
                   ))}
@@ -169,13 +162,13 @@ export function SearchDialog() {
               )}
             </div>
             
-            <div className="px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-bg-tertiary)] flex justify-between items-center text-xs text-[var(--color-text-tertiary)]">
+            <div className="px-4 py-3 border-t border-[#2a2a2a] bg-[#1a1a1a] flex justify-between items-center text-xs text-neutral-500">
               <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1"><kbd className="border border-[var(--color-border)] rounded px-1 pb-0.5 bg-[var(--color-bg-secondary)]">↑</kbd><kbd className="border border-[var(--color-border)] rounded px-1 pb-0.5 bg-[var(--color-bg-secondary)]">↓</kbd> to navigate</span>
-                <span className="flex items-center gap-1"><kbd className="border border-[var(--color-border)] rounded px-1 pb-0.5 bg-[var(--color-bg-secondary)]">↵</kbd> to select</span>
+                <span className="flex items-center gap-1"><kbd className="border border-[#2a2a2a] rounded px-1 pb-0.5 bg-[#141414]">↑</kbd><kbd className="border border-[#2a2a2a] rounded px-1 pb-0.5 bg-[#141414]">↓</kbd> to navigate</span>
+                <span className="flex items-center gap-1"><kbd className="border border-[#2a2a2a] rounded px-1 pb-0.5 bg-[#141414]">↵</kbd> to select</span>
               </div>
               <div>
-                Global shortcut: <kbd className="border border-[var(--color-border)] rounded px-1 pb-0.5 bg-[var(--color-bg-secondary)]">Cmd</kbd> + <kbd className="border border-[var(--color-border)] rounded px-1 pb-0.5 bg-[var(--color-bg-secondary)]">K</kbd>
+                Global shortcut: <kbd className="border border-[#2a2a2a] rounded px-1 pb-0.5 bg-[#141414]">Cmd</kbd> + <kbd className="border border-[#2a2a2a] rounded px-1 pb-0.5 bg-[#141414]">K</kbd>
               </div>
             </div>
           </motion.div>

@@ -15,7 +15,7 @@ const schema = yup.object({
   name: yup.string().required('Name is required').max(50),
   description: yup.string().max(200).default(''),
   icon: yup.string().required().default('✦'),
-  color: yup.string().required().default('#D4896A'),
+  color: yup.string().required().default('#f59e0b'),
   frequency: yup.string().oneOf(['daily', 'weekly', 'monthly', 'custom']).required(),
   priority: yup.string().oneOf(['low', 'medium', 'high']).required(),
   difficulty: yup.string().oneOf(['easy', 'medium', 'hard']).required(),
@@ -31,8 +31,8 @@ interface HabitFormProps {
   onCancel: () => void;
 }
 
-const PRESET_COLORS = ['#D4896A', '#5DB075', '#E6A849', '#D66A6A', '#7A6AD4', '#4DA5B3'];
-const PRESET_ICONS = ['✦', '🏃', '📚', '🧘‍♂️', '🧠', '💧', '🥗', '💻', '🎨', '📝'];
+const PRESET_COLORS = ['#f59e0b', '#f97316', '#84cc16', '#06b6d4', '#8b5cf6', '#ec4899'];
+const PRESET_ICONS = ['✦', '🏃', '📚', '🧘', '🧠', '💧', '🥗', '💻', '🎨', '📝'];
 
 export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
@@ -41,7 +41,7 @@ export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
       name: initialData?.name || '',
       description: initialData?.description || '',
       icon: initialData?.icon || '✦',
-      color: initialData?.color || '#D4896A',
+      color: initialData?.color || '#f59e0b',
       frequency: (initialData?.frequency as any) || 'daily',
       priority: (initialData?.priority as any) || 'medium',
       difficulty: (initialData?.difficulty as any) || 'medium',
@@ -58,41 +58,39 @@ export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="bg-[var(--color-bg-secondary)] rounded-xl border border-[var(--color-border)] shadow-lg overflow-hidden flex flex-col max-h-[90vh]"
+      className="bg-[#141414] rounded-2xl border border-[#2a2a2a] overflow-hidden flex flex-col max-h-[90vh]"
     >
-      <div className="flex items-center justify-between p-6 border-b border-[var(--color-border)]">
-        <h2 className="text-xl font-semibold">{initialData ? 'Edit Habit' : 'New Habit'}</h2>
-        <button onClick={onCancel} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-          <X size={20} />
+      <div className="flex items-center justify-between p-6 border-b border-[#2a2a2a]">
+        <h2 className="text-xl font-medium text-white">{initialData ? 'Edit Habit' : 'New Habit'}</h2>
+        <button onClick={onCancel} className="text-neutral-400 hover:text-white transition-colors duration-200">
+          <X size={20} strokeWidth={1.5} />
         </button>
       </div>
 
       <div className="p-6 overflow-y-auto flex-1">
         <form id="habit-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            {/* Basic Info */}
             <div>
-              <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-secondary)]">Name</label>
+              <label className="block text-sm font-medium mb-1.5 text-neutral-400">Name</label>
               <Input {...register('name')} placeholder="e.g. Read 20 pages" />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-secondary)]">Description</label>
+              <label className="block text-sm font-medium mb-1.5 text-neutral-400">Description</label>
               <Textarea {...register('description')} placeholder="Why are you building this habit?" className="min-h-[80px]" />
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-              {/* Appearance */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Icon & Color</label>
+                <label className="block text-sm font-medium mb-2 text-neutral-400">Icon & Color</label>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {PRESET_ICONS.map(i => (
                     <button 
                       key={i} 
                       type="button"
                       onClick={() => setValue('icon', i)}
-                      className={cn("w-10 h-10 rounded-md text-lg flex items-center justify-center border transition-all", selectedIcon === i ? "border-[var(--color-border-focus)] bg-[var(--color-bg-tertiary)]" : "border-transparent hover:bg-[var(--color-bg-hover)]")}
+                      className={cn("w-10 h-10 rounded-xl text-lg flex items-center justify-center border transition-colors duration-200", selectedIcon === i ? "border-[var(--accent-border)] bg-[var(--accent-soft)]" : "border-[#2a2a2a] hover:bg-[#1a1a1a]")}
                     >
                       {i}
                     </button>
@@ -104,18 +102,17 @@ export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
                       key={c} 
                       type="button"
                       onClick={() => setValue('color', c)}
-                      className={cn("w-6 h-6 rounded-full ring-offset-2 ring-offset-[var(--color-bg-secondary)] transition-all", selectedColor === c ? "ring-2 ring-[var(--color-border-focus)] scale-110" : "hover:scale-110")}
+                      className={cn("w-6 h-6 rounded-full ring-offset-2 ring-offset-[#141414] transition-all duration-200", selectedColor === c ? "ring-2 ring-[var(--accent)] scale-110" : "hover:scale-110")}
                       style={{ backgroundColor: c }}
                     />
                   ))}
                 </div>
               </div>
 
-              {/* Details */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-secondary)]">Frequency</label>
-                  <select {...register('frequency')} className="w-full h-10 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)]">
+                  <label className="block text-sm font-medium mb-1.5 text-neutral-400">Frequency</label>
+                  <select {...register('frequency')} className="w-full h-10 rounded-xl border border-[#2a2a2a] bg-[#141414] px-3 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors duration-200">
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
@@ -124,12 +121,12 @@ export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-secondary)]">Duration (m)</label>
+                    <label className="block text-sm font-medium mb-1.5 text-neutral-400">Duration (m)</label>
                     <Input type="number" {...register('estimatedDuration')} min="1" max="1440" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-secondary)]">Difficulty</label>
-                    <select {...register('difficulty')} className="w-full h-10 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)]">
+                    <label className="block text-sm font-medium mb-1.5 text-neutral-400">Difficulty</label>
+                    <select {...register('difficulty')} className="w-full h-10 rounded-xl border border-[#2a2a2a] bg-[#141414] px-3 text-sm text-white focus:outline-none focus:border-[var(--accent)] transition-colors duration-200">
                       <option value="easy">Easy</option>
                       <option value="medium">Medium</option>
                       <option value="hard">Hard</option>
@@ -142,7 +139,7 @@ export function HabitForm({ initialData, onSubmit, onCancel }: HabitFormProps) {
         </form>
       </div>
 
-      <div className="p-6 border-t border-[var(--color-border)] bg-[var(--color-bg-tertiary)] flex justify-end gap-3">
+      <div className="p-6 border-t border-[#2a2a2a] bg-[#1a1a1a] flex justify-end gap-3">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>
         <Button type="submit" form="habit-form">Save Habit</Button>
       </div>

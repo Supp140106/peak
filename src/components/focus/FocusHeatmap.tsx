@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '@/utils/cn';
 import { format, startOfYear, endOfYear, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 
 interface FocusHeatmapProps {
-  data: Record<string, number>; // date string -> minutes
+  data: Record<string, number>;
   view: 'yearly' | 'monthly';
   year?: number;
-  month?: number; // 0-11
-  onDayClick?: (date: string) => void; // optional click handler
+  month?: number;
+  onDayClick?: (date: string) => void;
 }
 
 export function FocusHeatmap({ data, view, year = new Date().getFullYear(), month = new Date().getMonth(), onDayClick }: FocusHeatmapProps) {
@@ -25,21 +24,19 @@ export function FocusHeatmap({ data, view, year = new Date().getFullYear(), mont
   }, [view, year, month]);
 
   const getLevelColor = (minutes: number) => {
-    if (minutes === 0) return 'bg-[var(--color-bg-tertiary)] opacity-30';
-    if (minutes <= 25) return 'bg-[var(--color-accent)] opacity-30';
-    if (minutes <= 60) return 'bg-[var(--color-accent)] opacity-50';
-    if (minutes <= 120) return 'bg-[var(--color-accent)] opacity-70';
-    if (minutes <= 240) return 'bg-[var(--color-accent)] opacity-90';
-    return 'bg-[var(--color-accent)]';
+    if (minutes === 0) return 'bg-[#1a1a1a]';
+    if (minutes <= 25) return 'bg-[var(--accent)]/30';
+    if (minutes <= 60) return 'bg-[var(--accent)]/50';
+    if (minutes <= 120) return 'bg-[var(--accent)]/70';
+    if (minutes <= 240) return 'bg-[var(--accent)]/90';
+    return 'bg-[var(--accent)]';
   };
 
-  // Group days by week for GitHub style (columns = weeks)
   const weeks: Date[][] = [];
   let currentWeek: Date[] = [];
   
-  // Fill leading empty days for the first week
   const firstDay = days[0];
-  const leadingDays = firstDay.getDay(); // 0 is Sunday
+  const leadingDays = firstDay.getDay();
   const startDayAdjusted = (leadingDays === 0 ? 6 : leadingDays - 1);
   
   for (let i = 0; i < startDayAdjusted; i++) {
@@ -80,7 +77,7 @@ export function FocusHeatmap({ data, view, year = new Date().getFullYear(), mont
   return (
     <div className="flex flex-col">
       {view === 'yearly' && (
-        <div className="flex text-[9px] text-[var(--color-text-tertiary)] mb-1.5 relative h-3 uppercase font-bold tracking-tighter">
+        <div className="flex text-[9px] text-neutral-500 mb-1.5 relative h-3 uppercase font-bold tracking-tighter">
           {monthLabels.map((m, i) => (
             <div 
               key={i} 
@@ -94,8 +91,7 @@ export function FocusHeatmap({ data, view, year = new Date().getFullYear(), mont
       )}
 
       <div className="flex gap-1">
-        {/* Day labels */}
-        <div className="flex flex-col gap-[3px] mt-1 pr-1 text-[8px] font-bold text-[var(--color-text-tertiary)] uppercase select-none">
+        <div className="flex flex-col gap-[3px] mt-1 pr-1 text-[8px] font-bold text-neutral-500 uppercase select-none">
           <div className="h-2.5 w-3"></div>
           <div className="h-2.5 w-3 text-center">Mon</div>
           <div className="h-2.5 w-3"></div>
@@ -118,20 +114,18 @@ export function FocusHeatmap({ data, view, year = new Date().getFullYear(), mont
                 };
                 
                 return (
-                  <motion.div
+                  <div
                     key={dayIdx}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: (weekIdx * 7 + dayIdx) * 0.0005 }}
+                    onClick={handleClick}
                     className={cn(
-                      "w-[10px] h-[10px] rounded-[1px] transition-all duration-300 relative group cursor-help",
+                      "w-[10px] h-[10px] rounded-[1px] transition-colors duration-200 relative group cursor-help",
                       getLevelColor(minutes)
                     )}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] text-[9px] rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl font-bold">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-white text-black text-[9px] rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 font-bold">
                       {format(day, 'MMM d')}: {minutes}m
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -139,7 +133,7 @@ export function FocusHeatmap({ data, view, year = new Date().getFullYear(), mont
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-1.5 mt-3 text-[8px] font-bold uppercase tracking-tighter text-[var(--color-text-tertiary)]">
+      <div className="flex items-center justify-end gap-1.5 mt-3 text-[8px] font-bold uppercase tracking-tighter text-neutral-500">
         <span>Less</span>
         {[0, 25, 60, 120, 240, 480].map((m, i) => (
           <div key={i} className={cn("w-[9px] h-[9px] rounded-[1px]", getLevelColor(m))} />

@@ -28,8 +28,8 @@ export function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
-        <div className="animate-pulse-soft font-medium">Loading Peak...</div>
+      <div className="h-screen w-full flex items-center justify-center bg-[#0c0c0c] text-white">
+        <div className="animate-pulse font-medium">Loading Peak...</div>
       </div>
     );
   }

@@ -1,7 +1,3 @@
-// =============================================
-// PEAK — Focus Block Page
-// =============================================
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,15 +9,11 @@ import * as blockDb from '@/database/blockSites';
 import type { DbCategory } from '@/database/blockSites';
 
 type Status = 'idle' | 'blocking' | 'loading' | 'error';
-
-// Re-export as Category for modal compatibility
 export type Category = DbCategory & { custom?: boolean };
-
-const STORAGE_KEY = 'peak_categories_v1_unused'; // kept for type compat, data now in SQLite
 
 function Favicon({ domain }: { domain: string }) {
   const [err, setErr] = useState(false);
-  if (err) return <span className="w-4 h-4 rounded-sm bg-[var(--color-bg-hover)] inline-block shrink-0" />;
+  if (err) return <span className="w-4 h-4 rounded-sm bg-[#1a1a1a] inline-block shrink-0" />;
   return (
     <img
       src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
@@ -32,23 +24,20 @@ function Favicon({ domain }: { domain: string }) {
   );
 }
 
-
-// ── Category Edit Modal ───────────────────────────────────────────────────────
-
 const EMOJI_OPTIONS = ['📱','🔞','🎰','🎬','🎮','📰','🎯','🛒','💬','🎵','📚','🏆','🌐','💼','🔥'];
 const COLOR_OPTIONS = [
-  'bg-blue-50 border-blue-200 text-blue-700',
-  'bg-red-50 border-red-200 text-red-700',
-  'bg-yellow-50 border-yellow-200 text-yellow-700',
-  'bg-purple-50 border-purple-200 text-purple-700',
-  'bg-green-50 border-green-200 text-green-700',
-  'bg-orange-50 border-orange-200 text-orange-700',
-  'bg-pink-50 border-pink-200 text-pink-700',
-  'bg-teal-50 border-teal-200 text-teal-700',
+  'bg-[#1a1a1a] border-[#2a2a2a] text-neutral-300',
+  'bg-red-500/10 border-red-500/30 text-red-400',
+   'bg-[var(--accent-soft)] border-[var(--accent-border)] text-[var(--accent-lighter)]',
+  'bg-green-500/10 border-green-500/30 text-green-400',
+  'bg-purple-500/10 border-purple-500/30 text-purple-400',
+  'bg-blue-500/10 border-blue-500/30 text-blue-400',
+  'bg-pink-500/10 border-pink-500/30 text-pink-400',
+  'bg-teal-500/10 border-teal-500/30 text-teal-400',
 ];
 
 interface ModalProps {
-  category: Category | null; // null = new category
+  category: Category | null;
   onSave: (cat: Category) => void;
   onClose: () => void;
 }
@@ -70,67 +59,65 @@ function CategoryModal({ category, onSave, onClose }: ModalProps) {
 
   const save = () => {
     if (!label.trim()) return;
-    onSave({
-      id: category?.id ?? `custom_${Date.now()}`,
-      label: label.trim(),
-      emoji,
-      color,
-      domains,
-      custom: true,
-    });
+      onSave({
+        id: category?.id ?? `custom_${Date.now()}`,
+        label: label.trim(),
+        emoji,
+        color,
+        domains,
+        is_custom: 1,
+        sort_order: 99,
+        custom: true,
+      });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         onClick={e => e.stopPropagation()}
-        className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 space-y-5"
+        className="bg-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-lg mx-4 p-6 space-y-5"
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
+          <h3 className="text-lg font-medium text-white">
             {isNew ? 'New Category' : `Edit "${category.label}"`}
           </h3>
-          <button onClick={onClose} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">
-            <X size={20} />
+          <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors duration-200">
+            <X size={20} strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Label */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">Name</label>
+          <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Name</label>
           <Input value={label} onChange={e => setLabel(e.target.value)} placeholder="Category name" />
         </div>
 
-        {/* Emoji picker */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">Icon</label>
+          <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Icon</label>
           <div className="flex flex-wrap gap-2">
             {EMOJI_OPTIONS.map(e => (
               <button key={e} onClick={() => setEmoji(e)}
-                className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center border transition-all ${emoji === e ? 'border-[var(--color-accent)] bg-[var(--color-accent-light)]' : 'border-[var(--color-border)] bg-[var(--color-bg-tertiary)]'}`}>
+                className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center border transition-colors duration-200 ${emoji === e ? 'border-[var(--accent-border)] bg-[var(--accent-soft)]' : 'border-[#2a2a2a] bg-[#1a1a1a]'}`}>
                 {e}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Color picker */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">Color</label>
+          <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Color</label>
           <div className="flex flex-wrap gap-2">
             {COLOR_OPTIONS.map(c => (
               <button key={c} onClick={() => setColor(c)}
-                className={`w-7 h-7 rounded-full border-2 transition-all ${c.split(' ')[0]} ${color === c ? 'border-[var(--color-accent)] scale-110' : 'border-transparent'}`} />
+                className={`w-7 h-7 rounded-full border-2 transition-all duration-200 ${c.split(' ')[0]} ${color === c ? 'ring-2 ring-[var(--accent)] scale-110' : 'border-transparent'}`} />
             ))}
           </div>
         </div>
 
-        {/* Domains */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
+          <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
             Domains ({domains.length})
           </label>
           <div className="flex gap-2">
@@ -138,17 +125,17 @@ function CategoryModal({ category, onSave, onClose }: ModalProps) {
               onKeyDown={e => e.key === 'Enter' && addDomain()}
               placeholder="e.g. example.com" className="flex-1" />
             <Button variant="outline" size="icon" onClick={addDomain} disabled={!domainInput.trim()}>
-              <Plus size={16} />
+              <Plus size={16} strokeWidth={1.5} />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto">
             {domains.map(d => (
-              <span key={d} className="flex items-center gap-1 pl-2 pr-1.5 py-0.5 rounded-full text-xs bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)]">
+              <span key={d} className="flex items-center gap-1 pl-2 pr-1.5 py-0.5 rounded-full text-xs bg-[#1a1a1a] border border-[#2a2a2a] text-white">
                 <Favicon domain={d} />
                 {d}
                 <button onClick={() => setDomains(prev => prev.filter(x => x !== d))}
-                  className="text-[var(--color-text-tertiary)] hover:text-[var(--color-danger)] ml-0.5">
-                  <X size={11} />
+                  className="text-neutral-500 hover:text-red-400 ml-0.5 transition-colors duration-200">
+                  <X size={11} strokeWidth={1.5} />
                 </button>
               </span>
             ))}
@@ -165,9 +152,6 @@ function CategoryModal({ category, onSave, onClose }: ModalProps) {
     </div>
   );
 }
-
-
-// ── Main Page ─────────────────────────────────────────────────────────────────
 
 export function FocusBlockPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -263,40 +247,38 @@ export function FocusBlockPage() {
     <div className="h-full flex flex-col space-y-8 pb-12">
       <header>
         <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-bold tracking-tight text-[var(--color-text-primary)] mb-2">
+          className="text-[clamp(28px,4vw,44px)] font-medium tracking-tight text-white mb-2">
           Focus Block
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-          className="text-[var(--color-text-secondary)] text-lg">
+          className="text-neutral-400 text-lg">
           Block distracting websites at the firewall level — even when the app is closed.
         </motion.p>
       </header>
 
       {isAdmin === false && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-warning-light)] border border-[var(--color-warning)]">
-          <AlertTriangle size={18} className="text-[var(--color-warning)] shrink-0" />
-          <span className="text-sm text-[var(--color-text-primary)]">Not running as Administrator — restart Peak as Administrator to use blocking.</span>
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-border)]">
+          <AlertTriangle size={18} strokeWidth={1.5} className="text-[var(--accent-lighter)] shrink-0" />
+          <span className="text-sm text-white">Not running as Administrator — restart Peak as Administrator to use blocking.</span>
         </div>
       )}
 
       {isBlocking && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-danger-light)] border border-[var(--color-danger)]">
-          <Shield size={18} className="text-[var(--color-danger)] shrink-0" />
-          <span className="text-sm text-[var(--color-danger)] font-medium">Blocking active — persists after closing the app. Click "Stop Blocking" to remove.</span>
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30">
+          <Shield size={18} strokeWidth={1.5} className="text-red-400 shrink-0" />
+          <span className="text-sm text-red-400 font-medium">Blocking active — persists after closing the app. Click "Stop Blocking" to remove.</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-
-          {/* Categories */}
           <Card>
             <CardContent className="p-6 space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-[var(--color-text-primary)]">Categories</h2>
+                <h2 className="font-medium text-white">Categories</h2>
                 <button onClick={() => setEditingCat('new')}
-                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-accent)] hover:opacity-80 transition-opacity">
-                  <FolderPlus size={14} /> New Category
+                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent-lighter)] hover:text-[var(--accent)] transition-colors duration-200">
+                  <FolderPlus size={14} strokeWidth={1.5} /> New Category
                 </button>
               </div>
 
@@ -305,34 +287,31 @@ export function FocusBlockPage() {
                   const active = isCategoryActive(cat);
                   return (
                     <div key={cat.id}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium ${cat.color} ${active ? 'ring-2 ring-offset-1 ring-current' : ''}`}>
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium ${cat.color} ${active ? 'ring-2 ring-offset-1 ring-[var(--accent)]' : ''}`}>
                       <span>{cat.emoji}</span>
-                      <span className="flex-1 truncate">{cat.label}</span>
-                      <span className="text-xs opacity-60 shrink-0">{cat.domains.length}</span>
+                      <span className="flex-1 truncate text-black">{cat.label}</span>
+                      <span className="text-xs opacity-60 shrink-0 text-neutral-500">{cat.domains.length}</span>
 
-                      {/* Edit */}
                       <button onClick={() => setEditingCat(cat)} disabled={locked}
-                        className="opacity-50 hover:opacity-100 transition-opacity disabled:pointer-events-none">
-                        <Pencil size={12} />
+                        className="opacity-50 hover:opacity-100 transition-opacity disabled:pointer-events-none text-neutral-400">
+                        <Pencil size={12} strokeWidth={1.5} />
                       </button>
 
-                      {/* Delete custom */}
                       {cat.custom && (
                         <button onClick={() => handleDeleteCategory(cat.id)} disabled={locked}
-                          className="opacity-50 hover:opacity-100 transition-opacity disabled:pointer-events-none">
-                          <Trash2 size={12} />
+                          className="opacity-50 hover:opacity-100 transition-opacity disabled:pointer-events-none text-neutral-400">
+                          <Trash2 size={12} strokeWidth={1.5} />
                         </button>
                       )}
 
-                      {/* Toggle all */}
                       {active ? (
                         <button onClick={() => removeCategory(cat)} disabled={locked}
-                          className="ml-1 px-2 py-0.5 rounded-full text-xs bg-current/10 hover:bg-current/20 transition-colors disabled:opacity-40 shrink-0">
+                          className="ml-1 px-2 py-0.5 rounded-full text-xs bg-white/10 hover:bg-white/20 transition-colors duration-200 shrink-0 text-white">
                           Remove all
                         </button>
                       ) : (
                         <button onClick={() => addCategory(cat)} disabled={locked}
-                          className="ml-1 px-2 py-0.5 rounded-full text-xs bg-current/10 hover:bg-current/20 transition-colors disabled:opacity-40 shrink-0">
+                          className="ml-1 px-2 py-0.5 rounded-full text-xs bg-white/10 hover:bg-white/20 transition-colors duration-200 shrink-0 text-white">
                           Add all
                         </button>
                       )}
@@ -343,13 +322,12 @@ export function FocusBlockPage() {
             </CardContent>
           </Card>
 
-          {/* Domain list */}
           <Card>
             <CardContent className="p-6 space-y-4">
-              <h2 className="font-semibold text-[var(--color-text-primary)]">
+              <h2 className="font-medium text-white">
                 Blocked Domains
                 {domains.length > 0 && (
-                  <span className="ml-2 text-xs font-normal text-[var(--color-text-tertiary)]">
+                  <span className="ml-2 text-xs font-normal text-neutral-500">
                     {domains.length} site{domains.length !== 1 ? 's' : ''}
                   </span>
                 )}
@@ -362,12 +340,12 @@ export function FocusBlockPage() {
                   disabled={locked} className="flex-1" />
                 <Button variant="outline" size="icon" onClick={addDomain}
                   disabled={!input.trim() || locked}>
-                  <Plus size={18} />
+                  <Plus size={18} strokeWidth={1.5} />
                 </Button>
               </div>
 
               {domains.length === 0 ? (
-                <p className="text-sm text-[var(--color-text-tertiary)] text-center py-6">
+                <p className="text-sm text-neutral-500 text-center py-6">
                   No domains added yet. Pick a category above or type a domain.
                 </p>
               ) : (
@@ -376,13 +354,13 @@ export function FocusBlockPage() {
                     {domains.map(d => (
                       <motion.span key={d}
                         initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }}
-                        className="flex items-center gap-1.5 pl-2 pr-2 py-1 rounded-full text-sm bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)]">
+                        className="flex items-center gap-1.5 pl-2 pr-2 py-1 rounded-full text-sm bg-[#1a1a1a] border border-[#2a2a2a] text-white">
                         <Favicon domain={d} />
                         <span>{d}</span>
                         {!locked && (
                           <button onClick={() => removeDomain(d)}
-                            className="text-[var(--color-text-tertiary)] hover:text-[var(--color-danger)] transition-colors ml-0.5">
-                            <X size={12} />
+                            className="text-neutral-500 hover:text-red-400 transition-colors duration-200 ml-0.5">
+                            <X size={12} strokeWidth={1.5} />
                           </button>
                         )}
                       </motion.span>
@@ -394,45 +372,44 @@ export function FocusBlockPage() {
           </Card>
 
           {status === 'error' && (
-            <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[var(--color-danger-light)] border border-[var(--color-danger)] text-sm">
-              <AlertTriangle size={16} className="text-[var(--color-danger)] mt-0.5 shrink-0" />
-              <span className="text-[var(--color-text-primary)]">{error}</span>
+            <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-sm">
+              <AlertTriangle size={16} strokeWidth={1.5} className="text-red-400 mt-0.5 shrink-0" />
+              <span className="text-white">{error}</span>
             </div>
           )}
         </div>
 
-        {/* Right panel */}
         <div className="space-y-4">
-          <Card className={`border-2 transition-colors ${isBlocking ? 'border-[var(--color-danger)]' : 'border-[var(--color-border)]'}`}>
+          <Card className={`border-2 transition-colors duration-200 ${isBlocking ? 'border-red-500/30' : 'border-[#2a2a2a]'}`}>
             <CardContent className="p-6 flex flex-col items-center text-center gap-4">
               <motion.div
                 animate={isBlocking ? { scale: [1, 1.06, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className={`w-16 h-16 rounded-full flex items-center justify-center ${isBlocking ? 'bg-[var(--color-danger-light)]' : 'bg-[var(--color-bg-tertiary)]'}`}>
-                {isLoading ? <Loader2 size={28} className="text-[var(--color-accent)] animate-spin" />
-                  : isBlocking ? <Shield size={28} className="text-[var(--color-danger)]" />
-                  : <ShieldOff size={28} className="text-[var(--color-text-tertiary)]" />}
+                className={`w-16 h-16 rounded-full flex items-center justify-center ${isBlocking ? 'bg-red-500/10' : 'bg-[#1a1a1a]'}`}>
+                {isLoading ? <Loader2 size={28} strokeWidth={1.5} className="text-[var(--accent)] animate-spin" />
+                  : isBlocking ? <Shield size={28} strokeWidth={1.5} className="text-red-400" />
+                  : <ShieldOff size={28} strokeWidth={1.5} className="text-neutral-500" />}
               </motion.div>
 
               <div>
-                <p className="font-semibold text-[var(--color-text-primary)]">
+                <p className="font-medium text-white">
                   {isLoading ? 'Working...' : isBlocking ? 'Blocking Active' : 'Not Blocking'}
                 </p>
-                <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                <p className="text-sm text-neutral-400 mt-1">
                   {isBlocking ? `${domains.length} site${domains.length !== 1 ? 's' : ''} blocked` : 'All sites accessible'}
                 </p>
               </div>
 
               {isBlocking ? (
-                <Button variant="outline" className="w-full border-[var(--color-danger)] text-[var(--color-danger)] hover:bg-[var(--color-danger-light)]"
+                <Button variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10"
                   onClick={handleUnblock} disabled={isLoading}>
-                  {isLoading ? <Loader2 size={16} className="animate-spin mr-2" /> : <ShieldOff size={16} className="mr-2" />}
+                  {isLoading ? <Loader2 size={16} strokeWidth={1.5} className="animate-spin mr-2" /> : <ShieldOff size={16} strokeWidth={1.5} className="mr-2" />}
                   Stop Blocking
                 </Button>
               ) : (
                 <Button className="w-full" onClick={handleBlock}
                   disabled={domains.length === 0 || isLoading || isAdmin === false}>
-                  {isLoading ? <Loader2 size={16} className="animate-spin mr-2" /> : <Shield size={16} className="mr-2" />}
+                  {isLoading ? <Loader2 size={16} strokeWidth={1.5} className="animate-spin mr-2" /> : <Shield size={16} strokeWidth={1.5} className="mr-2" />}
                   Start Blocking
                 </Button>
               )}
@@ -442,8 +419,8 @@ export function FocusBlockPage() {
           <Card>
             <CardContent className="p-4 space-y-2">
               {['Blocks at the Windows Firewall level','Works across all browsers & apps','Persists after closing the app','Restores automatically on login'].map(t => (
-                <div key={t} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  <CheckCircle2 size={14} className="text-[var(--color-success)] shrink-0" />{t}
+                <div key={t} className="flex items-center gap-2 text-sm text-neutral-400">
+                  <CheckCircle2 size={14} strokeWidth={1.5} className="text-[var(--accent-lighter)] shrink-0" />{t}
                 </div>
               ))}
             </CardContent>
@@ -451,7 +428,6 @@ export function FocusBlockPage() {
         </div>
       </div>
 
-      {/* Category modal */}
       <AnimatePresence>
         {editingCat !== null && (
           <CategoryModal

@@ -1,10 +1,6 @@
-// =============================================
-// PEAK — Goals Page
-// =============================================
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Flag, Plus, Minus, CheckCircle2, MoreVertical, Trash2 } from 'lucide-react';
+import { Target, Flag, Plus, Minus, CheckCircle2, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -43,11 +39,11 @@ export function GoalsPage() {
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)] mb-1">Goals</h1>
-          <p className="text-[var(--color-text-secondary)]">Set long-term objectives and track milestones.</p>
+          <h1 className="text-[clamp(28px,4vw,44px)] font-medium tracking-tight text-white mb-1">Goals</h1>
+          <p className="text-neutral-400">Set long-term objectives and track milestones.</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="gap-2">
-          <Target size={16} /> New Goal
+          <Target size={16} strokeWidth={1.5} /> New Goal
         </Button>
       </div>
 
@@ -59,56 +55,56 @@ export function GoalsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className="h-full hover:border-[var(--color-accent)]/50 transition-all group shadow-sm hover:shadow-md">
+            <Card className="h-full hover:border-[var(--accent-border)] transition-colors duration-200">
               <CardContent className="p-6 flex flex-col h-full">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]">
+                  <div className="px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-widest bg-[#1a1a1a] text-neutral-400 border border-[#2a2a2a]">
                     {goal.category}
                   </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => deleteGoal(goal.id)}
-                      className="text-[var(--color-text-tertiary)] hover:text-[var(--color-danger)] transition-colors"
+                      className="text-neutral-500 hover:text-red-400 transition-colors duration-200"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={16} strokeWidth={1.5} />
                     </button>
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-semibold mb-1 text-[var(--color-text-primary)]">{goal.title}</h3>
-                <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)] mb-6">
-                  <Flag size={12} /> {goal.targetDate ? `Target: ${goal.targetDate}` : 'No target date'}
+                <h3 className="text-xl font-medium mb-1 text-white">{goal.title}</h3>
+                <div className="flex items-center gap-1.5 text-xs text-neutral-400 mb-6">
+                  <Flag size={12} strokeWidth={1.5} /> {goal.targetDate ? `Target: ${goal.targetDate}` : 'No target date'}
                 </div>
                 
                 <div className="mt-auto space-y-4">
                   <div>
                     <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="font-medium text-[var(--color-text-secondary)]">Progress</span>
-                      <span className="font-bold text-[var(--color-text-primary)]">{goal.progress}%</span>
+                      <span className="font-medium text-neutral-400">Progress</span>
+                      <span className="font-medium text-white">{goal.progress}%</span>
                     </div>
-                    <div className="w-full h-2.5 bg-[var(--color-bg-tertiary)] rounded-full overflow-hidden mb-4">
+                    <div className="w-full h-2.5 bg-[#1a1a1a] rounded-full overflow-hidden mb-4">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${goal.progress}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent)]/80 rounded-full shadow-[0_0_8px_var(--color-accent)]/20"
+                        className="h-full bg-[var(--accent)] rounded-full"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-4 py-2 border-t border-[var(--color-border)] pt-4">
+                  <div className="flex items-center justify-center gap-4 py-2 border-t border-[#2a2a2a] pt-4">
                     <button 
                       onClick={() => handleAdjustProgress(goal.id, goal.progress, -5)}
-                      className="p-1.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-[#1a1a1a] text-neutral-400 transition-colors duration-200"
                     >
-                      <Minus size={18} />
+                      <Minus size={18} strokeWidth={1.5} />
                     </button>
-                    <div className="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-widest">Adjust</div>
+                    <div className="text-xs font-medium text-neutral-500 uppercase tracking-widest">Adjust</div>
                     <button 
                       onClick={() => handleAdjustProgress(goal.id, goal.progress, 5)}
-                      className="p-1.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-[#1a1a1a] text-neutral-400 transition-colors duration-200"
                     >
-                      <Plus size={18} />
+                      <Plus size={18} strokeWidth={1.5} />
                     </button>
                   </div>
                 </div>
@@ -117,12 +113,12 @@ export function GoalsPage() {
           </motion.div>
         ))}
         {goals.length === 0 && !isLoading && (
-          <div className="col-span-full py-20 text-center border-2 border-dashed border-[var(--color-border)] rounded-2xl bg-[var(--color-bg-secondary)]/30">
-            <div className="w-16 h-16 bg-[var(--color-bg-tertiary)] rounded-full flex items-center justify-center mx-auto mb-4 text-[var(--color-text-tertiary)]">
-              <Target size={32} />
+          <div className="col-span-full py-20 text-center border-2 border-dashed border-[#2a2a2a] rounded-2xl bg-[#141414]/30">
+            <div className="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-500">
+              <Target size={32} strokeWidth={1.5} />
             </div>
-            <h3 className="text-lg font-medium text-[var(--color-text-primary)]">No goals found</h3>
-            <p className="text-[var(--color-text-secondary)] mt-1">What's your next big achievement?</p>
+            <h3 className="text-lg font-medium text-white">No goals found</h3>
+            <p className="text-neutral-400 mt-1">What's your next big achievement?</p>
             <Button onClick={() => setIsModalOpen(true)} className="mt-6" variant="outline">
               Create First Goal
             </Button>
@@ -130,36 +126,35 @@ export function GoalsPage() {
         )}
       </div>
 
-      {/* Goal Creation Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-black/75"
               onClick={() => setIsModalOpen(false)}
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative z-10 w-full max-w-md bg-[var(--color-bg-secondary)] rounded-3xl p-8 border border-[var(--color-border)] shadow-2xl"
+              className="relative z-10 w-full max-w-md bg-[#141414] rounded-2xl border border-[#2a2a2a] p-8"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-light)] flex items-center justify-center text-[var(--color-accent)]">
-                  <Target size={20} />
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent-soft)] flex items-center justify-center text-[var(--accent-lighter)]">
+                  <Target size={20} strokeWidth={1.5} />
                 </div>
-                <h2 className="text-2xl font-bold">New Goal</h2>
+                <h2 className="text-xl font-medium text-white">New Goal</h2>
               </div>
 
               <div className="space-y-6">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-2 block">Goal Title</label>
+                  <label className="text-xs font-medium uppercase tracking-widest text-neutral-500 mb-2 block">Goal Title</label>
                   <Input 
                     value={newGoalTitle} 
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewGoalTitle(e.target.value)}
                     placeholder="e.g. Run a Marathon"
-                    className="h-12 text-lg bg-[var(--color-bg-tertiary)] border-none rounded-xl"
+                    className="h-12 text-lg bg-[#1a1a1a] border-none rounded-xl"
                     autoFocus
                   />
                 </div>

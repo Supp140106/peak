@@ -6,7 +6,6 @@ import { HabitForm } from '@/components/habits/HabitForm';
 import { CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { AnimatePresence, motion } from 'framer-motion';
-
 import { useNavigate } from 'react-router-dom';
 
 export function HabitsPage() {
@@ -30,8 +29,8 @@ export function HabitsPage() {
     <div className="h-full flex flex-col relative">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)] mb-1">Your Habits</h1>
-          <p className="text-[var(--color-text-secondary)]">Manage and track your daily routines.</p>
+          <h1 className="text-[clamp(28px,4vw,44px)] font-medium tracking-tight text-white mb-1">Your Habits</h1>
+          <p className="text-neutral-400">Manage and track your daily routines.</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           Create Habit
@@ -77,7 +76,7 @@ export function HabitsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/75"
               onClick={() => setIsModalOpen(false)}
             />
             <div className="relative z-10 w-full max-w-2xl">

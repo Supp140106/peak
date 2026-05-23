@@ -6,6 +6,20 @@ import { create } from 'zustand';
 import type { AppSettings } from '@/types';
 import * as settingsDb from '@/database/settings';
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function applyAccentColor(hex: string) {
+  document.documentElement.style.setProperty('--accent', hex);
+  document.documentElement.style.setProperty('--accent-soft', hexToRgba(hex, 0.1));
+  document.documentElement.style.setProperty('--accent-border', hexToRgba(hex, 0.3));
+  document.documentElement.style.setProperty('--accent-lighter', hexToRgba(hex, 0.8));
+}
+
 interface SettingsState {
   settings: AppSettings | null;
   isLoading: boolean;
@@ -32,7 +46,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       }
       
       // Apply accent color
-      document.documentElement.style.setProperty('--color-accent', loaded.accentColor);
+      applyAccentColor(loaded.accentColor);
       
     } catch (error) {
       console.error('Failed to load settings:', error);
@@ -57,7 +71,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
     
     if (key === 'accentColor') {
-      document.documentElement.style.setProperty('--color-accent', value as string);
+      applyAccentColor(value as string);
     }
     
     try {
